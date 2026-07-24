@@ -304,15 +304,35 @@ class StudentDatabase {
         return localStorage.getItem(this.sessionKey) === 'true';
     }
 
-    login(username, password) {
-        if (username && username.toLowerCase().trim() === 'admin' && password === 'admin123') {
-            localStorage.setItem(this.sessionKey, 'true');
-            localStorage.setItem('smart_student_user_name', 'Admin');
-            this.logActivity('Admin user logged in successfully', 'info');
-            return true;
-        }
-        return false;
+    login(email, password) {
+
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+
+    const user = users.find(
+        u =>
+        u.email.toLowerCase() === email.toLowerCase().trim() &&
+        u.password === password
+    );
+
+    if (user) {
+
+        localStorage.setItem(this.sessionKey, "true");
+
+        localStorage.setItem(
+            "smart_student_user_name",
+            user.fullName
+        );
+
+        this.logActivity(
+            user.fullName + " logged in successfully",
+            "info"
+        );
+
+        return true;
     }
+
+    return false;
+}
 
     logout() {
         localStorage.removeItem(this.sessionKey);

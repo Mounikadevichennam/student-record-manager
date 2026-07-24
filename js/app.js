@@ -64,7 +64,7 @@ class AppController {
 
         loginForm?.addEventListener('submit', (e) => {
             e.preventDefault();
-            const user = document.getElementById('loginUsername').value.trim();
+            const user = document.getElementById('loginEmail').value.trim();
             const pass = document.getElementById('loginPassword').value.trim();
 
             if (db.login(user, pass)) {
@@ -74,16 +74,16 @@ class AppController {
                 this.navigateTo('dashboard');
             } else {
                 if (loginErrEl) {
-                    if (loginErrText) loginErrText.textContent = 'Invalid Username or Password.';
+                    if (loginErrText) loginErrText.textContent = 'Invalid Email or Password.';
                     loginErrEl.style.display = 'flex';
                 }
-                this.showToast('Invalid Username or Password.', 'error');
+                this.showToast('Invalid Email or Password.', 'error');
             }
         });
 
         const handleLogout = () => {
             db.logout();
-            const uInput = document.getElementById('loginUsername');
+            const uInput = document.getElementById('loginEmail');
             const pInput = document.getElementById('loginPassword');
             if (uInput) uInput.value = '';
             if (pInput) pInput.value = '';

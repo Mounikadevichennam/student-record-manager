@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | Smart Student Record Manager</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+
+<body>
+
+<div class="auth-container">
+
+    <div class="auth-card">
+
+        <div class="auth-header">
+
+            <h1>Create Account</h1>
+
+            <p>Create your Smart Student Record Manager account</p>
+
+        </div>
+
+        <form id="signupForm">
+
+            <div class="input-group">
+
+                <label>Full Name</label>
+
+                <input
+                    type="text"
+                    id="fullName"
+                    placeholder="Enter Full Name"
+                    required>
+
+            </div>
+
+            <div class="input-group">
+
+                <label>Email Address</label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter Email Address"
+                    required>
+
+            </div>
+
+            <div class="input-group">
+
+                <label>Mobile Number</label>
+
+                <input
+                    type="tel"
+                    id="mobile"
+                    maxlength="10"
+                    placeholder="Enter Mobile Number"
+                    required>
+
+            </div>
+
+            <div class="input-group">
+
+                <label>Password</label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Create Strong Password"
+                    required>
+
+                <small id="passwordMessage"></small>
+
+                <div class="strength-container">
+
+                    <div id="strengthBar"></div>
+
+                </div>
+
+            </div>
+
+            <div class="input-group">
+
+                <label>Confirm Password</label>
+
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="Confirm Password"
+                    required>
+
+            </div>
+                        <div class="input-group">
+                <label class="checkbox-container">
+                    <input type="checkbox" id="terms" required>
+                    <span>
+                        I agree to the
+                        <a href="#">Terms & Conditions</a>
+                        and
+                        <a href="#">Privacy Policy</a>
+                    </span>
+                </label>
+            </div>
+
+            <button type="submit" class="auth-btn">
+                Create Account
+            </button>
+
+            <div class="auth-footer">
+
+                <p>
+                    Already have an account?
+                    <a href="index.html">
+                        Login Here
+                    </a>
+                </p>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script src="js/auth.js"></script>
+
+</body>
+</html>
