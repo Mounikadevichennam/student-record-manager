@@ -346,4 +346,4 @@ class StudentDatabase {
 }
 
 // Global DB instance
-const db = new StudentDatabase();
+window.db = new StudentDatabase();
