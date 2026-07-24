@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Student Record Manager with Intelligent Search</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- CSS stylesheet -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- LOGIN / AUTH VIEW OVERLAY -->
+    <div id="view-login" class="login-view-container active">
+        <div class="login-card glass-card">
+            <div class="login-header">
+                <div class="logo-box lg">
+                    <i data-lucide="graduation-cap"></i>
+                </div>
+                <h2>Smart Student Record Manager</h2>
+                <p>KIET & KIET+ Intelligent Academic System</p>
+            </div>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="loginUsername"><i data-lucide="user"></i> Username</label>
+                    <input type="text" id="loginUsername" placeholder="Username (e.g. admin)" required autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword"><i data-lucide="lock"></i> Password</label>
+                    <input type="password" id="loginPassword" placeholder="Password (e.g. admin123)" required autocomplete="current-password">
+                </div>
+
+                <div class="login-options-row">
+                    <label class="remember-checkbox">
+                        <input type="checkbox" id="rememberMe" checked>
+                        <span>Remember Me</span>
+                    </label>
+                </div>
+
+                <div id="loginErrorMsg" class="login-error-alert" style="display: none;">
+                    <i data-lucide="alert-circle"></i>
+                    <span id="loginErrorText">Invalid Username or Password.</span>
+                </div>
+
+                <div class="demo-credentials-box">
+                    <i data-lucide="key-round"></i>
+                    <span>Demo Credentials: <strong>admin</strong> / <strong>admin123</strong></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg margin-top-md">
+                    <i data-lucide="log-in"></i> Login to Portal
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER (Hidden until authenticated) -->
+    <div class="app-container" id="appMainContainer" style="display: none;">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-box">
+                    <i data-lucide="graduation-cap" class="logo-icon"></i>
+                </div>
+                <div class="logo-text">
+                    <h2>EduRecord<span>.c</span></h2>
+                    <p>KIET / KIET+ v2.5</p>
+                </div>
+                <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close sidebar">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">MAIN MENU</div>
+                <a href="#home" class="nav-item active" data-view="home">
+                    <i data-lucide="home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="#dashboard" class="nav-item" data-view="dashboard">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <div class="nav-section-title">RECORD MANAGEMENT</div>
+                <a href="#add-student" class="nav-item" data-view="add-student">
+                    <i data-lucide="user-plus"></i>
+                    <span>Add Student</span>
+                </a>
+                <a href="#view-students" class="nav-item" data-view="view-students">
+                    <i data-lucide="users"></i>
+                    <span>View Students</span>
+                </a>
+                <a href="#search-student" class="nav-item" data-view="search-student">
+                    <i data-lucide="search"></i>
+                    <span>Search Engine</span>
+                </a>
+                <a href="#update-student" class="nav-item" data-view="update-student">
+                    <i data-lucide="user-check"></i>
+                    <span>Update Record</span>
+                </a>
+                <a href="#delete-student" class="nav-item" data-view="delete-student">
+                    <i data-lucide="user-x"></i>
+                    <span>Delete Record</span>
+                </a>
+
+                <div class="nav-section-title">ANALYTICS & REPORTS</div>
+                <a href="#statistics" class="nav-item" data-view="statistics">
+                    <i data-lucide="bar-chart-3"></i>
+                    <span>Statistics</span>
+                </a>
+                <a href="#reports" class="nav-item" data-view="reports">
+                    <i data-lucide="file-text"></i>
+                    <span>Reports</span>
+                </a>
+
+                <div class="nav-section-title">DOCUMENTATION</div>
+                <a href="#about" class="nav-item" data-view="about">
+                    <i data-lucide="info"></i>
+                    <span>About & C-Concepts</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-user-box" style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:rgba(255,255,255,0.06); border-radius:var(--radius-sm); margin-bottom:10px;">
+                    <div style="display:flex; align-items:center; gap:8px; font-size:0.85rem; font-weight:600; color:#fff;">
+                        <i data-lucide="user-check" style="width:16px; height:16px; color:var(--teal);"></i>
+                        <span id="sidebarUserName">Admin</span>
+                    </div>
+                    <button class="btn-logout" id="sidebarLogoutBtn" title="Logout" style="background:none; border:none; color:#ef4444; cursor:pointer;"><i data-lucide="log-out" style="width:16px; height:16px;"></i></button>
+                </div>
+                <div class="c-badge">
+                    <i data-lucide="code-2"></i>
+                    <span>C Programming & DS</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <div class="main-wrapper">
+            <!-- Top Navigation Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle-btn" id="menuToggleBtn" aria-label="Toggle sidebar">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <div class="page-title-box">
+                        <h1 id="currentPageTitle">Home</h1>
+                        <p id="currentPageSubtitle">Welcome to Smart Student Record Manager</p>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <!-- Quick Global Search Bar -->
+                    <div class="quick-search-wrapper">
+                        <i data-lucide="search" class="quick-search-icon"></i>
+                        <input type="text" id="quickSearchInput" placeholder="Quick search by Roll No or Name..." autocomplete="off">
+                        <div class="quick-search-results" id="quickSearchResults"></div>
+                    </div>
+
+                    <!-- Quick Add Button -->
+                    <button class="btn btn-teal btn-sm" id="topbarQuickAddBtn">
+                        <i data-lucide="plus"></i>
+                        <span>New Record</span>
+                    </button>
+
+                    <!-- Theme Toggle Button -->
+                    <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Light/Dark Theme">
+                        <i data-lucide="sun" class="sun-icon"></i>
+                        <i data-lucide="moon" class="moon-icon"></i>
+                    </button>
+
+                    <!-- User Account / Logout -->
+                    <div class="user-session-badge">
+                        <i data-lucide="user" style="width:14px; height:14px; color:var(--teal);"></i>
+                        <span class="user-name" id="loggedInUserDisplay">Admin</span>
+                        <button class="btn-logout" id="logoutBtn" title="Logout Session"><i data-lucide="log-out"></i></button>
+                    </div>
+
+                    <!-- Storage Badge -->
+                    <div class="storage-indicator" title="Data stored in C-struct format via LocalStorage file handling simulation">
+                        <span class="status-dot"></span>
+                        <span id="recordCountBadge">0 Records</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area with Dynamic Views -->
+            <main class="content-body">
+                <!-- VIEW 1: HOME PAGE -->
+                <section id="view-home" class="view-page">
+                    <div class="hero-section">
+                        <div class="hero-content">
+                            <div class="hero-badge">
+                                <i data-lucide="sparkles"></i> KIET / KIET+ Academic Mini Project
+                            </div>
+                            <h1 class="hero-title">Smart Student Record Manager <br><span class="gradient-text">with Intelligent Search</span></h1>
+                            <p class="hero-tagline">"Manage, Search and Analyze Student Records Efficiently."</p>
+                            <p class="hero-description">
+                                A high-performance academic record management system designed to demonstrate Programming in C, Data Structures (Arrays & Structs), Searching Algorithms (Linear & Binary), Sorting, File I/O Simulation, and modern Web Engineering.
+                            </p>
+                            <div class="hero-actions">
+                                <button class="btn btn-primary btn-lg" onclick="app.navigateTo('dashboard')">
+                                    <i data-lucide="layout-dashboard"></i> Launch Dashboard
+                                </button>
+                                <button class="btn btn-outline btn-lg" onclick="app.navigateTo('about')">
+                                    <i data-lucide="book-open"></i> Explore C Concepts
+                                </button>
+                            </div>
+                        </div>
+                        <div class="hero-graphic">
+                            <div class="glass-card hero-preview-card">
+                                <div class="preview-header">
+                                    <div class="dots"><span></span><span></span><span></span></div>
+                                    <span class="preview-title">student_records.c (Struct Buffer)</span>
+                                </div>
+                                <div class="code-preview">
+                                    <pre><code><span class="keyword">struct</span> <span class="type">Student</span> {
+    <span class="keyword">char</span> rollNo[15]; <span class="comment">// 25B21A4501</span>
+    <span class="keyword">char</span> name[50];
+    <span class="keyword">char</span> campus[10]; <span class="comment">// B2(KIET), 6Q(KIET+)</span>
+    <span class="keyword">char</span> branch[10]; <span class="comment">// AID(45), AIML(42)...</span>
+    <span class="keyword">char</span> studentType[15]; <span class="comment">// Day Scholar / Hosteller</span>
+    <span class="keyword">float</span> cgpa;
+};
+<span class="keyword">struct</span> <span class="type">Student</span> db[1000];</code></pre>
+                                </div>
+                                <div class="hero-stats-mini">
+                                    <div class="mini-stat">
+                                        <h4 id="heroStatTotal">0</h4>
+                                        <p>Students</p>
+                                    </div>
+                                    <div class="mini-stat">
+                                        <h4 id="heroStatAvg">0.00</h4>
+                                        <p>Avg CGPA</p>
+                                    </div>
+                                    <div class="mini-stat">
+                                        <h4 id="heroStatSearch">&lt; 1ms</h4>
+                                        <p>Search Speed</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project Overview Section -->
+                    <div class="section-title-box">
+                        <h2>Key Project Highlights</h2>
+                        <p>Bridging traditional C language fundamentals with modern interactive web architecture</p>
+                    </div>
+
+                    <div class="features-grid">
+                        <div class="feature-card glass-card">
+                            <div class="feature-icon bg-blue">
+                                <i data-lucide="database"></i>
+                            </div>
+                            <h3>Structured Data Storage</h3>
+                            <p>Data modelled using C-style <code>struct Student</code> arrays with strict field validations, unique roll key enforcement, and persistent storage simulation.</p>
+                        </div>
+                        <div class="feature-card glass-card">
+                            <div class="feature-icon bg-teal">
+                                <i data-lucide="zap"></i>
+                            </div>
+                            <h3>Dual Search Engines</h3>
+                            <p>Compare <strong>Linear Search</strong> vs <strong>Binary Search</strong> in real-time. Visualize search comparisons, step counts, and Big-O efficiency metrics.</p>
+                        </div>
+                        <div class="feature-card glass-card">
+                            <div class="feature-icon bg-indigo">
+                                <i data-lucide="bar-chart-2"></i>
+                            </div>
+                            <h3>Analytics Dashboard</h3>
+                            <p>Dynamic charts and real-time computation of highest, lowest, average CGPA, branch counts, and campus/student type statistics.</p>
+                        </div>
+                        <div class="feature-card glass-card">
+                            <div class="feature-icon bg-purple">
+                                <i data-lucide="file-output"></i>
+                            </div>
+                            <h3>Report Generator</h3>
+                            <p>Generate clean, printable PDF reports for merit lists, branch rosters, and campus performance summaries.</p>
+                        </div>
+                    </div>
+
+                    <!-- Tech Information Card -->
+                    <div class="tech-info-accordion" id="homeTechAccordion"></div>
+                </section>
+
+                <!-- VIEW 2: DASHBOARD PAGE -->
+                <section id="view-dashboard" class="view-page">
+                    <!-- Metrics Row -->
+                    <div class="metrics-grid">
+                        <div class="metric-card glass-card">
+                            <div class="metric-icon blue">
+                                <i data-lucide="users"></i>
+                            </div>
+                            <div class="metric-info">
+                                <p class="metric-label">Total Students</p>
+                                <h2 class="metric-value" id="dashTotalStudents">0</h2>
+                                <span class="metric-subtext">Active Enrolled Records</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card glass-card">
+                            <div class="metric-icon green">
+                                <i data-lucide="award"></i>
+                            </div>
+                            <div class="metric-info">
+                                <p class="metric-label">Highest CGPA</p>
+                                <h2 class="metric-value" id="dashHighestCGPA">0.00</h2>
+                                <span class="metric-subtext" id="dashTopStudentName">--</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card glass-card">
+                            <div class="metric-icon orange">
+                                <i data-lucide="trending-down"></i>
+                            </div>
+                            <div class="metric-info">
+                                <p class="metric-label">Lowest CGPA</p>
+                                <h2 class="metric-value" id="dashLowestCGPA">0.00</h2>
+                                <span class="metric-subtext" id="dashLowStudentName">--</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card glass-card">
+                            <div class="metric-icon teal">
+                                <i data-lucide="calculator"></i>
+                            </div>
+                            <div class="metric-info">
+                                <p class="metric-label">Average CGPA</p>
+                                <h2 class="metric-value" id="dashAvgCGPA">0.00</h2>
+                                <span class="metric-subtext">Class Overall Mean</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card glass-card">
+                            <div class="metric-icon purple">
+                                <i data-lucide="home"></i>
+                            </div>
+                            <div class="metric-info">
+                                <p class="metric-label">Hostellers / Day Scholars</p>
+                                <h2 class="metric-value" id="dashHostellerRatio">0 / 0</h2>
+                                <span class="metric-subtext">Residence Distribution</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Navigation Cards Grid -->
+                    <div class="dashboard-actions-header">
+                        <h3>Quick Action Navigation</h3>
+                        <p>Access core CRUD operations and analytics instantly</p>
+                    </div>
+
+                    <div class="dash-cards-grid">
+                        <div class="dash-action-card" onclick="app.navigateTo('add-student')">
+                            <div class="card-icon"><i data-lucide="user-plus"></i></div>
+                            <h4>Add Student</h4>
+                            <p>Register new student record with input validations</p>
+                            <span class="card-link">Open Form &rarr;</span>
+                        </div>
+
+                        <div class="dash-action-card" onclick="app.navigateTo('view-students')">
+                            <div class="card-icon"><i data-lucide="users"></i></div>
+                            <h4>View Students</h4>
+                            <p>Explore, sort, filter & paginate complete roster</p>
+                            <span class="card-link">View Table &rarr;</span>
+                        </div>
+
+                        <div class="dash-action-card" onclick="app.navigateTo('search-student')">
+                            <div class="card-icon"><i data-lucide="search"></i></div>
+                            <h4>Search Student</h4>
+                            <p>Compare Linear vs Binary Search on Roll, Name & Mobile</p>
+                            <span class="card-link">Search Engine &rarr;</span>
+                        </div>
+
+                        <div class="dash-action-card" onclick="app.navigateTo('update-student')">
+                            <div class="card-icon"><i data-lucide="user-check"></i></div>
+                            <h4>Update Student</h4>
+                            <p>Search & modify existing student records seamlessly</p>
+                            <span class="card-link">Edit Records &rarr;</span>
+                        </div>
+
+                        <div class="dash-action-card" onclick="app.navigateTo('delete-student')">
+                            <div class="card-icon"><i data-lucide="user-x"></i></div>
+                            <h4>Delete Student</h4>
+                            <p>Simulate array shifting & file rewrite deletion</p>
+                            <span class="card-link">Remove Record &rarr;</span>
+                        </div>
+
+                        <div class="dash-action-card" onclick="app.navigateTo('statistics')">
+                            <div class="card-icon"><i data-lucide="bar-chart-3"></i></div>
+                            <h4>Statistics</h4>
+                            <p>Interactive branch distribution & CGPA chart breakdown</p>
+                            <span class="card-link">View Charts &rarr;</span>
+                        </div>
+
+                        <div class="dash-action-card" onclick="app.navigateTo('reports')">
+                            <div class="card-icon"><i data-lucide="file-text"></i></div>
+                            <h4>Reports</h4>
+                            <p>Generate merit list, branch reports & PDF exports</p>
+                            <span class="card-link">Generate Reports &rarr;</span>
+                        </div>
+
+                        <div class="dash-action-card" onclick="app.navigateTo('about')">
+                            <div class="card-icon"><i data-lucide="info"></i></div>
+                            <h4>About Project</h4>
+                            <p>Academic information, C-code mapping & team details</p>
+                            <span class="card-link">Read Details &rarr;</span>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity & Charts Row -->
+                    <div class="grid-2-cols margin-top-lg">
+                        <div class="glass-card activity-card">
+                            <div class="card-header-flex">
+                                <h3><i data-lucide="clock"></i> Recent Activity Log</h3>
+                                <button class="btn btn-xs btn-outline" id="clearActivityLogBtn">Clear Log</button>
+                            </div>
+                            <ul class="activity-list" id="dashboardActivityList">
+                                <!-- Populated dynamically -->
+                            </ul>
+                        </div>
+
+                        <div class="glass-card chart-preview-card">
+                            <div class="card-header-flex">
+                                <h3><i data-lucide="pie-chart"></i> Branch Distribution</h3>
+                                <button class="btn btn-xs btn-outline" onclick="app.navigateTo('statistics')">Full Stats</button>
+                            </div>
+                            <div class="chart-container-sm">
+                                <canvas id="dashBranchChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tech Information Card -->
+                    <div class="tech-info-accordion" id="dashTechAccordion"></div>
+                </section>
+
+                <!-- VIEW 3: ADD STUDENT PAGE -->
+                <section id="view-add-student" class="view-page">
+                    <div class="form-container-wrapper full-width-layout">
+                        <div class="grid-2-cols form-layout-grid">
+                            <!-- Left: Registration Form -->
+                            <div class="glass-card form-card">
+                                <div class="form-header">
+                                    <h2><i data-lucide="user-plus"></i> Student Registration Form</h2>
+                                    <p>Enter student profile information with automatic format validations</p>
+                                </div>
+
+                                <form id="addStudentForm" class="student-form">
+                                    <div class="form-grid">
+                                        <!-- Campus Dropdown -->
+                                        <div class="form-group">
+                                            <label for="addCampus"><i data-lucide="building"></i> Campus <span class="required">*</span></label>
+                                            <select id="addCampus" required>
+                                                <option value="">Select Campus</option>
+                                                <option value="KIET">KIET (Code: B2)</option>
+                                                <option value="KIET+">KIET+ (Code: 6Q)</option>
+                                            </select>
+                                            <span class="error-msg" id="addCampusErr"></span>
+                                        </div>
+
+                                        <!-- Branch Dropdown -->
+                                        <div class="form-group">
+                                            <label for="addBranch"><i data-lucide="git-branch"></i> Branch <span class="required">*</span></label>
+                                            <select id="addBranch" required>
+                                                <option value="">Select Branch</option>
+                                                <option value="AID">Artificial Intelligence & Data Science (AID - 45)</option>
+                                                <option value="AIML">Artificial Intelligence & Machine Learning (AIML - 42)</option>
+                                                <option value="AI">Artificial Intelligence (AI - 43)</option>
+                                                <option value="DS">Data Science (DS - 44)</option>
+                                                <option value="Cyber Security">Cyber Security (Code: 46)</option>
+                                            </select>
+                                            <span class="error-msg" id="addBranchErr"></span>
+                                        </div>
+
+                                        <!-- Roll Number -->
+                                        <div class="form-group full-width">
+                                            <label for="addRollNo"><i data-lucide="hash"></i> Roll Number (Format: 25B21A4501) <span class="required">*</span></label>
+                                            <input type="text" id="addRollNo" placeholder="e.g. 25B21A4501" style="text-transform: uppercase;" required>
+                                            <span class="error-msg" id="addRollNoErr"></span>
+                                        </div>
+
+                                        <!-- Full Name -->
+                                        <div class="form-group full-width">
+                                            <label for="addFullName"><i data-lucide="user"></i> Full Name <span class="required">*</span></label>
+                                            <input type="text" id="addFullName" placeholder="e.g. Rahul Sharma" required>
+                                            <span class="error-msg" id="addFullNameErr"></span>
+                                        </div>
+
+                                        <!-- Student Type -->
+                                        <div class="form-group">
+                                            <label for="addStudentType"><i data-lucide="home"></i> Student Type <span class="required">*</span></label>
+                                            <select id="addStudentType" required>
+                                                <option value="">Select Type</option>
+                                                <option value="Day Scholar">Day Scholar</option>
+                                                <option value="Hosteller">Hosteller</option>
+                                            </select>
+                                            <span class="error-msg" id="addStudentTypeErr"></span>
+                                        </div>
+
+                                        <!-- Year Dropdown -->
+                                        <div class="form-group">
+                                            <label for="addYear"><i data-lucide="calendar"></i> Year <span class="required">*</span></label>
+                                            <select id="addYear" required>
+                                                <option value="">Select Academic Year</option>
+                                                <option value="1st Year">1st Year</option>
+                                                <option value="2nd Year">2nd Year</option>
+                                                <option value="3rd Year">3rd Year</option>
+                                                <option value="4th Year">4th Year</option>
+                                            </select>
+                                            <span class="error-msg" id="addYearErr"></span>
+                                        </div>
+
+                                        <!-- Semester Dropdown -->
+                                        <div class="form-group">
+                                            <label for="addSemester"><i data-lucide="layers"></i> Semester <span class="required">*</span></label>
+                                            <select id="addSemester" required>
+                                                <option value="">Select Semester</option>
+                                                <option value="1-1">1-1</option>
+                                                <option value="1-2">1-2</option>
+                                                <option value="2-1">2-1</option>
+                                                <option value="2-2">2-2</option>
+                                                <option value="3-1">3-1</option>
+                                                <option value="3-2">3-2</option>
+                                                <option value="4-1">4-1</option>
+                                                <option value="4-2">4-2</option>
+                                            </select>
+                                            <span class="error-msg" id="addSemesterErr"></span>
+                                        </div>
+
+                                        <!-- Mobile Number -->
+                                        <div class="form-group">
+                                            <label for="addMobile"><i data-lucide="phone"></i> Mobile Number <span class="required">*</span></label>
+                                            <input type="text" id="addMobile" placeholder="10 digits (e.g. 9876543210)" maxlength="10" required>
+                                            <span class="error-msg" id="addMobileErr"></span>
+                                        </div>
+
+                                        <!-- CGPA -->
+                                        <div class="form-group">
+                                            <label for="addCGPA"><i data-lucide="star"></i> CGPA (0.00 - 10.00) <span class="required">*</span></label>
+                                            <input type="number" id="addCGPA" step="0.01" min="0" max="10" placeholder="e.g. 8.75" required>
+                                            <span class="error-msg" id="addCGPAErr"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary btn-md">
+                                            <i data-lucide="save"></i> Save Record
+                                        </button>
+                                        <button type="button" class="btn btn-secondary btn-md" id="resetAddFormBtn">
+                                            <i data-lucide="rotate-ccw"></i> Reset
+                                        </button>
+                                        <button type="button" class="btn btn-outline btn-md" onclick="app.navigateTo('dashboard')">
+                                            <i data-lucide="arrow-left"></i> Back to Dashboard
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Right: Roll Number Format Help Card (Requirement 7) -->
+                            <div class="glass-card help-card">
+                                <div class="card-header">
+                                    <h3><i data-lucide="help-circle"></i> Roll Number Format Guide</h3>
+                                    <p>Format structure breakdown: <code>25B21A4501</code></p>
+                                </div>
+                                <div class="help-breakdown-list">
+                                    <div class="help-item">
+                                        <span class="code-pill">25</span>
+                                        <div>
+                                            <strong>Admission Year</strong>
+                                            <p>2-digit year (e.g., 25 for 2025)</p>
+                                        </div>
+                                    </div>
+                                    <div class="help-item">
+                                        <span class="code-pill campus">B2 / 6Q</span>
+                                        <div>
+                                            <strong>Campus Code</strong>
+                                            <p><strong>B2</strong> = KIET | <strong>6Q</strong> = KIET+</p>
+                                        </div>
+                                    </div>
+                                    <div class="help-item">
+                                        <span class="code-pill">1A</span>
+                                        <div>
+                                            <strong>Common Identifier</strong>
+                                            <p>Fixed code '1A'</p>
+                                        </div>
+                                    </div>
+                                    <div class="help-item">
+                                        <span class="code-pill branch">Branch Code</span>
+                                        <div>
+                                            <strong>Branch Identifiers</strong>
+                                            <ul>
+                                                <li><code>45</code> = AID (AI & Data Science)</li>
+                                                <li><code>42</code> = AIML (AI & Machine Learning)</li>
+                                                <li><code>43</code> = AI (Artificial Intelligence)</li>
+                                                <li><code>44</code> = DS (Data Science)</li>
+                                                <li><code>46</code> = Cyber Security</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="help-item">
+                                        <span class="code-pill">01</span>
+                                        <div>
+                                            <strong>Serial Number</strong>
+                                            <p>Student serial digit(s) (e.g. 01, 02...)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tech Information Card -->
+                    <div class="tech-info-accordion" id="addTechAccordion"></div>
+                </section>
+
+                <!-- VIEW 4: VIEW STUDENTS PAGE -->
+                <section id="view-view-students" class="view-page">
+                    <div class="glass-card table-wrapper-card">
+                        <!-- Filters & Controls Bar -->
+                        <div class="table-controls-bar">
+                            <div class="search-filter-box">
+                                <div class="input-icon-wrapper">
+                                    <i data-lucide="search"></i>
+                                    <input type="text" id="tableSearchInput" placeholder="Filter by Name, Roll No, Campus or Mobile...">
+                                </div>
+                            </div>
+
+                            <div class="dropdown-filters">
+                                <select id="filterCampusSelect" class="filter-select">
+                                    <option value="ALL">All Campuses</option>
+                                    <option value="KIET">KIET</option>
+                                    <option value="KIET+">KIET+</option>
+                                </select>
+
+                                <select id="filterBranchSelect" class="filter-select">
+                                    <option value="ALL">All Branches</option>
+                                    <option value="AID">AID</option>
+                                    <option value="AIML">AIML</option>
+                                    <option value="AI">AI</option>
+                                    <option value="DS">DS</option>
+                                    <option value="Cyber Security">Cyber Security</option>
+                                </select>
+
+                                <select id="filterTypeSelect" class="filter-select">
+                                    <option value="ALL">All Types</option>
+                                    <option value="Day Scholar">Day Scholar</option>
+                                    <option value="Hosteller">Hosteller</option>
+                                </select>
+
+                                <select id="filterSemesterSelect" class="filter-select">
+                                    <option value="ALL">All Semesters</option>
+                                    <option value="1-1">1-1</option>
+                                    <option value="1-2">1-2</option>
+                                    <option value="2-1">2-1</option>
+                                    <option value="2-2">2-2</option>
+                                    <option value="3-1">3-1</option>
+                                    <option value="3-2">3-2</option>
+                                    <option value="4-1">4-1</option>
+                                    <option value="4-2">4-2</option>
+                                </select>
+
+                                <button class="btn btn-sm btn-secondary" id="resetTableFiltersBtn" title="Reset Filters">
+                                    <i data-lucide="rotate-ccw"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Sorting Buttons Bar -->
+                        <div class="sort-bar">
+                            <span class="sort-label">Sort Records By:</span>
+                            <button class="sort-btn active" data-sort="rollNo">Roll No <i data-lucide="arrow-up-narrow-wide"></i></button>
+                            <button class="sort-btn" data-sort="name">Name <i data-lucide="arrow-down-z-a"></i></button>
+                            <button class="sort-btn" data-sort="cgpa">CGPA (High to Low) <i data-lucide="award"></i></button>
+                            <button class="sort-btn" data-sort="branch">Branch <i data-lucide="git-branch"></i></button>
+                            <span class="records-counter" id="recordsCounterText">Showing 0 of 0 Records</span>
+                        </div>
+
+                        <!-- Students Table -->
+                        <div class="table-responsive">
+                            <table class="students-table" id="studentsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Roll No</th>
+                                        <th>Full Name</th>
+                                        <th>Campus</th>
+                                        <th>Branch</th>
+                                        <th>Year</th>
+                                        <th>Sem</th>
+                                        <th>Type</th>
+                                        <th>Mobile</th>
+                                        <th>CGPA</th>
+                                        <th class="text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="studentsTableBody">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Table Pagination -->
+                        <div class="table-pagination">
+                            <div class="pagination-info" id="paginationInfo">Page 1 of 1</div>
+                            <div class="pagination-controls">
+                                <button class="btn btn-xs btn-outline" id="prevPageBtn" disabled><i data-lucide="chevron-left"></i> Previous</button>
+                                <div class="page-numbers" id="pageNumbers"></div>
+                                <button class="btn btn-xs btn-outline" id="nextPageBtn">Next <i data-lucide="chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tech Information Card -->
+                    <div class="tech-info-accordion" id="viewTechAccordion"></div>
+                </section>
+
+                <!-- VIEW 5: SEARCH PAGE -->
+                <section id="view-search-student" class="view-page">
+                    <div class="grid-2-cols search-layout">
+                        <!-- Left Panel: Search Query & Controls -->
+                        <div class="glass-card search-controls-card">
+                            <div class="card-header">
+                                <h2><i data-lucide="search"></i> Intelligent Search Engine</h2>
+                                <p>Perform & compare linear vs binary search algorithms in C</p>
+                            </div>
+
+                            <form id="searchForm" class="search-form">
+                                <div class="form-group">
+                                    <label><i data-lucide="filter"></i> Search Criteria</label>
+                                    <div class="radio-tile-group">
+                                        <label class="radio-tile">
+                                            <input type="radio" name="searchCriteria" value="rollNo" checked>
+                                            <span class="radio-tile-label"><i data-lucide="hash"></i> Roll No</span>
+                                        </label>
+                                        <label class="radio-tile">
+                                            <input type="radio" name="searchCriteria" value="name">
+                                            <span class="radio-tile-label"><i data-lucide="user"></i> Name</span>
+                                        </label>
+                                        <label class="radio-tile">
+                                            <input type="radio" name="searchCriteria" value="branch">
+                                            <span class="radio-tile-label"><i data-lucide="git-branch"></i> Branch</span>
+                                        </label>
+                                        <label class="radio-tile">
+                                            <input type="radio" name="searchCriteria" value="mobile">
+                                            <span class="radio-tile-label"><i data-lucide="phone"></i> Mobile</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="searchQueryInput"><i data-lucide="search"></i> Search Query</label>
+                                    <input type="text" id="searchQueryInput" placeholder="Enter Roll Number or Name..." required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label><i data-lucide="cpu"></i> Algorithm Selection</label>
+                                    <select id="searchAlgorithmSelect" class="form-select">
+                                        <option value="BOTH">Compare Both (Linear vs Binary Search)</option>
+                                        <option value="LINEAR">Linear Search O(N)</option>
+                                        <option value="BINARY">Binary Search O(log N) - Auto Sort</option>
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-block">
+                                    <i data-lucide="play"></i> Execute Search & Compare
+                                </button>
+                            </form>
+
+                            <!-- Algorithm Comparison Box -->
+                            <div class="algo-metrics-box" id="algoMetricsBox" style="display: none;">
+                                <h4><i data-lucide="activity"></i> Performance Metrics</h4>
+                                <div class="metrics-comparison-grid">
+                                    <div class="metric-pillar linear">
+                                        <span class="pillar-title">Linear Search</span>
+                                        <div class="pillar-stat">
+                                            <span class="stat-num" id="linearComparisons">0</span>
+                                            <span class="stat-label">Comparisons</span>
+                                        </div>
+                                        <span class="badge badge-warning">O(N) Time</span>
+                                    </div>
+                                    <div class="metric-pillar binary">
+                                        <span class="pillar-title">Binary Search</span>
+                                        <div class="pillar-stat">
+                                            <span class="stat-num" id="binaryComparisons">0</span>
+                                            <span class="stat-label">Comparisons</span>
+                                        </div>
+                                        <span class="badge badge-success">O(log N) Time</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Panel: Results & Step Tracer -->
+                        <div class="glass-card search-results-card">
+                            <div class="card-header">
+                                <h2><i data-lucide="file-search"></i> Search Output & Profile</h2>
+                            </div>
+
+                            <div id="searchOutputContainer">
+                                <div class="empty-state">
+                                    <i data-lucide="search" class="empty-icon"></i>
+                                    <h3>No Search Executed Yet</h3>
+                                    <p>Select criteria, enter a search term, and hit Execute to view matching student profile and C-algorithm step trace.</p>
+                                </div>
+                            </div>
+
+                            <!-- Step Trace Log Container -->
+                            <div class="step-tracer-container" id="stepTracerContainer" style="display: none;">
+                                <h4><i data-lucide="list-checks"></i> Execution Step Tracer</h4>
+                                <div class="tracer-logs" id="tracerLogs"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tech Information Card -->
+                    <div class="tech-info-accordion" id="searchTechAccordion"></div>
+                </section>
+
+                <!-- VIEW 6: UPDATE PAGE -->
+                <section id="view-update-student" class="view-page">
+                    <div class="form-container-wrapper">
+                        <!-- Step 1: Search Student to Edit -->
+                        <div class="glass-card form-card">
+                            <div class="form-header">
+                                <h2><i data-lucide="user-check"></i> Update Student Record</h2>
+                                <p>Search by Roll Number to retrieve and modify student profile</p>
+                            </div>
+
+                            <div class="search-fetch-row">
+                                <div class="form-group flex-1">
+                                    <input type="text" id="updateSearchRollNo" placeholder="Enter Roll Number to Edit (e.g. 25B21A4501)">
+                                </div>
+                                <button class="btn btn-teal" id="fetchForUpdateBtn">
+                                    <i data-lucide="search"></i> Load Profile
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Editable Profile Form -->
+                        <div class="glass-card form-card margin-top-md" id="updateFormCard" style="display: none;">
+                            <form id="updateStudentForm">
+                                <input type="hidden" id="editOriginalRollNo">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="editCampus">Campus</label>
+                                        <select id="editCampus" required>
+                                            <option value="KIET">KIET (Code: B2)</option>
+                                            <option value="KIET+">KIET+ (Code: 6Q)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editBranch">Branch</label>
+                                        <select id="editBranch" required>
+                                            <option value="AID">AID (45)</option>
+                                            <option value="AIML">AIML (42)</option>
+                                            <option value="AI">AI (43)</option>
+                                            <option value="DS">DS (44)</option>
+                                            <option value="Cyber Security">Cyber Security (46)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label for="editRollNo">Roll Number</label>
+                                        <input type="text" id="editRollNo" required>
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label for="editFullName">Full Name</label>
+                                        <input type="text" id="editFullName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editStudentType">Student Type</label>
+                                        <select id="editStudentType" required>
+                                            <option value="Day Scholar">Day Scholar</option>
+                                            <option value="Hosteller">Hosteller</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editYear">Year</label>
+                                        <select id="editYear" required>
+                                            <option value="1st Year">1st Year</option>
+                                            <option value="2nd Year">2nd Year</option>
+                                            <option value="3rd Year">3rd Year</option>
+                                            <option value="4th Year">4th Year</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editSemester">Semester</label>
+                                        <select id="editSemester" required>
+                                            <option value="1-1">1-1</option>
+                                            <option value="1-2">1-2</option>
+                                            <option value="2-1">2-1</option>
+                                            <option value="2-2">2-2</option>
+                                            <option value="3-1">3-1</option>
+                                            <option value="3-2">3-2</option>
+                                            <option value="4-1">4-1</option>
+                                            <option value="4-2">4-2</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editMobile">Mobile Number (10 digits)</label>
+                                        <input type="text" id="editMobile" maxlength="10" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editCGPA">CGPA (0.00 - 10.00)</label>
+                                        <input type="number" id="editCGPA" step="0.01" min="0" max="10" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i data-lucide="check-circle"></i> Save Changes
+                                    </button>
+                                    <button type="button" class="btn btn-outline" id="cancelUpdateBtn">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Tech Information Card -->
+                    <div class="tech-info-accordion" id="updateTechAccordion"></div>
+                </section>
+
+                <!-- VIEW 7: DELETE PAGE -->
+                <section id="view-delete-student" class="view-page">
+                    <div class="form-container-wrapper">
+                        <div class="glass-card form-card">
+                            <div class="form-header">
+                                <h2><i data-lucide="user-x"></i> Delete Student Record</h2>
+                                <p>Simulate array element deletion & temporary C file rewrite mechanism</p>
+                            </div>
+
+                            <div class="search-fetch-row">
+                                <div class="form-group flex-1">
+                                    <input type="text" id="deleteSearchRollNo" placeholder="Enter Roll Number to Delete (e.g. 25B21A4501)">
+                                </div>
+                                <button class="btn btn-danger" id="fetchForDeleteBtn">
+                                    <i data-lucide="search"></i> Find Profile
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Record Confirmation Box -->
+                        <div class="glass-card form-card margin-top-md" id="deletePreviewCard" style="display: none;">
+                            <div class="delete-warning-box">
+                                <i data-lucide="alert-triangle" class="warn-icon"></i>
+                                <div>
+                                    <h4>Confirm Record Deletion</h4>
+                                    <p>Are you sure you want to delete this record? This action will remove the record from memory and rewrite the underlying database file.</p>
+                                </div>
+                            </div>
+
+                            <div class="student-profile-preview" id="deleteStudentProfile">
+                                <!-- Rendered dynamically -->
+                            </div>
+
+                            <div class="form-actions margin-top-md">
+                                <button class="btn btn-danger" id="confirmDeleteBtn">
+                                    <i data-lucide="trash-2"></i> Permanently Delete Record
+                                </button>
+                                <button class="btn btn-outline" id="cancelDeleteBtn">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tech Information Card -->
+                    <div class="tech-info-accordion" id="deleteTechAccordion"></div>
+                </section>
+
+                <!-- VIEW 8: STATISTICS PAGE -->
+                <section id="view-statistics" class="view-page">
+                    <!-- Progress & Summary Cards -->
+                    <div class="metrics-grid">
+                        <div class="metric-card glass-card">
+                            <div class="metric-icon blue"><i data-lucide="users"></i></div>
+                            <div class="metric-info">
+                                <p class="metric-label">Total Roster Count</p>
+                                <h2 class="metric-value" id="statsTotal">0</h2>
+                            </div>
+                        </div>
+                        <div class="metric-card glass-card">
+                            <div class="metric-icon green"><i data-lucide="star"></i></div>
+                            <div class="metric-info">
+                                <p class="metric-label">Highest CGPA</p>
+                                <h2 class="metric-value" id="statsHighest">0.00</h2>
+                            </div>
+                        </div>
+                        <div class="metric-card glass-card">
+                            <div class="metric-icon orange"><i data-lucide="trending-down"></i></div>
+                            <div class="metric-info">
+                                <p class="metric-label">Lowest CGPA</p>
+                                <h2 class="metric-value" id="statsLowest">0.00</h2>
+                            </div>
+                        </div>
+                        <div class="metric-card glass-card">
+                            <div class="metric-icon teal"><i data-lucide="calculator"></i></div>
+                            <div class="metric-info">
+                                <p class="metric-label">Average CGPA</p>
+                                <h2 class="metric-value" id="statsAvg">0.00</h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid -->
+                    <div class="grid-2-cols margin-top-lg">
+                        <!-- Bar Chart: Branch -->
+                        <div class="glass-card chart-card">
+                            <div class="card-header">
+                                <h3><i data-lucide="bar-chart-2"></i> Department / Branch Distribution</h3>
+                                <p>Student count across AID, AIML, AI, DS & Cyber Security</p>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="statsBranchChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Pie Chart: Student Type -->
+                        <div class="glass-card chart-card">
+                            <div class="card-header">
+                                <h3><i data-lucide="home"></i> Student Type Breakdown</h3>
+                                <p>Day Scholars vs Hostellers Distribution</p>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="statsTypeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Charts Row: CGPA & Semester -->
+                    <div class="grid-2-cols margin-top-lg">
+                        <div class="glass-card chart-card">
+                            <div class="card-header">
+                                <h3><i data-lucide="pie-chart"></i> CGPA Performance Tiers</h3>
+                                <p>Distinction, First Class & Pass grades</p>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="statsCGPAChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="glass-card chart-card">
+                            <div class="card-header">
+                                <h3><i data-lucide="layers"></i> Semester Breakdown</h3>
+                                <p>Enrolled student numbers across Semesters 1-1 to 4-2</p>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="statsSemesterChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tech Information Card -->
+                    <div class="tech-info-accordion" id="statsTechAccordion"></div>
+                </section>
+
+                <!-- VIEW 9: REPORTS PAGE -->
+                <section id="view-reports" class="view-page">
+                    <div class="glass-card reports-controls-card">
+                        <div class="card-header">
+                            <h2><i data-lucide="file-text"></i> Report Generator</h2>
+                            <p>Generate academic merit lists, branch rosters & export formatted documents</p>
+                        </div>
+
+                        <div class="reports-filters-grid">
+                            <div class="form-group">
+                                <label for="reportTypeSelect"><i data-lucide="filter"></i> Report Type</label>
+                                <select id="reportTypeSelect" class="form-select">
+                                    <option value="FULL">Complete Student Roster</option>
+                                    <option value="TOP_PERFORMERS">Top Performers (CGPA &gt;= 8.5)</option>
+                                    <option value="BRANCH">Branch-wise Report</option>
+                                    <option value="SEMESTER">Semester-wise Report</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" id="reportBranchGroup" style="display: none;">
+                                <label for="reportBranchSelect">Select Branch</label>
+                                <select id="reportBranchSelect" class="form-select">
+                                    <option value="AID">AID</option>
+                                    <option value="AIML">AIML</option>
+                                    <option value="AI">AI</option>
+                                    <option value="DS">DS</option>
+                                    <option value="Cyber Security">Cyber Security</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" id="reportSemGroup" style="display: none;">
+                                <label for="reportSemSelect">Select Semester</label>
+                                <select id="reportSemSelect" class="form-select">
+                                    <option value="1-1">1-1</option>
+                                    <option value="1-2">1-2</option>
+                                    <option value="2-1">2-1</option>
+                                    <option value="2-2">2-2</option>
+                                    <option value="3-1">3-1</option>
+                                    <option value="3-2">3-2</option>
+                                    <option value="4-1">4-1</option>
+                                    <option value="4-2">4-2</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="report-actions-row">
+                            <button class="btn btn-primary" id="generateReportBtn">
+                                <i data-lucide="refresh-cw"></i> Generate Report
+                            </button>
+                            <button class="btn btn-secondary" id="printReportBtn">
+                                <i data-lucide="printer"></i> Print / Save as PDF
+                            </button>
+                            <button class="btn btn-outline" id="exportCSVBtn">
+                                <i data-lucide="download"></i> Export CSV
+                            </button>
+                            <button class="btn btn-outline" id="exportJSONBtn">
+                                <i data-lucide="file-json"></i> Export JSON
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Report Preview Paper Container -->
+                    <div class="report-paper-wrapper margin-top-lg">
+                        <div class="report-paper" id="reportPaperContainer">
+                            <!-- Report rendered dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Tech Information Card -->
+                    <div class="tech-info-accordion" id="reportsTechAccordion"></div>
+                </section>
+
+                <!-- VIEW 10: ABOUT PAGE -->
+                <section id="view-about" class="view-page">
+                    <div class="glass-card about-hero-card">
+                        <h2>Smart Student Record Manager with Intelligent Search</h2>
+                        <p class="about-subtitle">KIET & KIET+ Academic Mini Project in Programming in C & Data Structures</p>
+                    </div>
+
+                    <!-- Problem Statement & Objectives -->
+                    <div class="grid-2-cols margin-top-md">
+                        <div class="glass-card">
+                            <h3><i data-lucide="target"></i> Project Objective</h3>
+                            <p>To design and deploy a modern, efficient student management web application that simulates fundamental C programming principles, dynamic memory concepts, array structures, binary search trees/algorithms, and persistent storage file handling.</p>
+                        </div>
+                        <div class="glass-card">
+                            <h3><i data-lucide="help-circle"></i> Problem Statement</h3>
+                            <p>Traditional paper-based or basic CLI student management systems lack intuitive search mechanisms, real-time analytics, and validation. This project resolves these issues by pairing O(log N) binary search efficiency with modern web interfaces.</p>
+                        </div>
+                    </div>
+
+                    <!-- Architecture & Flow Diagram -->
+                    <div class="glass-card margin-top-md">
+                        <h3><i data-lucide="workflow"></i> System Flow Diagram & C-Structure Architecture</h3>
+                        <div class="diagram-container">
+                            <div class="flow-step">
+                                <div class="step-badge">1. Input / Validation</div>
+                                <p>Format Check (Roll format: 25B21A4501, 10-digit Phone, CGPA 0-10)</p>
+                            </div>
+                            <div class="flow-arrow">&rarr;</div>
+                            <div class="flow-step">
+                                <div class="step-badge">2. C-Struct Array Buffer</div>
+                                <p><code>struct Student db[1000]</code></p>
+                            </div>
+                            <div class="flow-arrow">&rarr;</div>
+                            <div class="flow-step">
+                                <div class="step-badge">3. QuickSort / Binary Search</div>
+                                <p>O(log N) fast key lookup & array sorting</p>
+                            </div>
+                            <div class="flow-arrow">&rarr;</div>
+                            <div class="flow-step">
+                                <div class="step-badge">4. File Persistence</div>
+                                <p><code>fwrite() / fread()</code> LocalStorage File Buffer</p>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Advantages & Future Scope -->
+                    <div class="grid-2-cols margin-top-md">
+                        <div class="glass-card">
+                            <h3><i data-lucide="check-circle-2"></i> Project Advantages</h3>
+                            <ul>
+                                <li>Dual Search Engine demonstrating Linear vs Binary efficiency.</li>
+                                <li>Strict Roll Number format validation matching Campus and Branch codes.</li>
+                                <li>Interactive visual analytics with Chart.js.</li>
+                                <li>Instant printable academic report generation.</li>
+                            </ul>
+                        </div>
+
+                        <div class="glass-card">
+                            <h3><i data-lucide="compass"></i> Future Scope</h3>
+                            <ul>
+                                <li>Integration with real SQL/MongoDB backend database.</li>
+                                <li>Extensible campus module for future campus additions.</li>
+                                <li>Export to Excel (.xlsx) and cloud synchronization.</li>
+                                <li>Biometric student login & face recognition.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Tech Information Card -->
+                    <div class="tech-info-accordion" id="aboutTechAccordion"></div>
+                </section>
+            </main>
+
+            <!-- Footer -->
+            <footer class="main-footer">
+                <div class="footer-content">
+                    <p><strong>Smart Student Record Manager with Intelligent Search</strong> &copy; 2025-2026</p>
+                    <p>Department of Computer Science & AI Engineering | KIET Group of Institutions</p>
+                    <p>Developed by Team of 6 Members for C & Data Structures Mini Project</p>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Student Detail Modal -->
+    <div class="modal-overlay" id="detailModalOverlay">
+        <div class="modal-container glass-card">
+            <div class="modal-header">
+                <h3><i data-lucide="user"></i> Student Complete Profile</h3>
+                <button class="modal-close-btn" id="closeDetailModalBtn">&times;</button>
+            </div>
+            <div class="modal-body" id="detailModalBody">
+                <!-- Rendered dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="printDetailModalBtn"><i data-lucide="printer"></i> Print Profile</button>
+                <button class="btn btn-primary" id="closeDetailModalBtn2">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- C-Code Inspector Modal -->
+    <div class="modal-overlay" id="codeModalOverlay">
+        <div class="modal-container glass-card code-modal">
+            <div class="modal-header">
+                <h3><i data-lucide="code-2"></i> C-Language Implementation Code</h3>
+                <button class="modal-close-btn" id="closeCodeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="codeModalDescription" class="code-desc"></p>
+                <pre><code id="codeModalSnippet"></code></pre>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="closeCodeModalBtn2">Close Inspector</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- JS Files -->
+    <script src="js/data.js"></script>
+    <script src="js/algorithms.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/reports.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
